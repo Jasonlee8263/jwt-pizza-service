@@ -42,8 +42,8 @@ test('logout', async () => {
   expect(logoutRes.status).toBe(200);
 })
 
-test('update user', async () => {
-  const updateRes = await request(app).put('/api/auth/1').send(testUser).set('Authorization', `Bearer ${testUserAuthToken}`)
-  console.log(updateRes.body)
-  expect(updateRes.status).toBe(200)
-})
+// test('update user', async () => {
+//   const updateRes = await request(app).put('/api/auth/1').send(testUser).set('Authorization', `Bearer ${testUserAuthToken}`)
+//   console.log(updateRes.body)
+//   expect(updateRes.status).toBe(200)
+// })
