@@ -18,11 +18,13 @@ async function createAdminUser() {
 const testUser = { name: 'pizza diner', email: 'reg@test.com', password: 'a' };
 let adminUser;
 let testUserAuthToken;
+let testUserId;
 
 beforeAll(async () => {
   testUser.email = Math.random().toString(36).substring(2, 12) + '@test.com';
   const registerRes = await request(app).post('/api/auth').send(testUser);
   testUserAuthToken = registerRes.body.token;
+  testUserId = registerRes.body.user.id
 });
 
 test('login', async () => {
@@ -46,15 +48,10 @@ test('logout', async () => {
 
 test('update user', async () => {
   adminUser = await createAdminUser();
-  console.log(adminUser)
-    testFranchise = {
-        name: 'pizzaPocket',
-        admins: [{ email: 'admin@jwt.com' }]
-      };
-  const response = await request(app)
+  const loginRes = await request(app)
     .put('/api/auth')
     .send({ email: adminUser.email, password: adminUser.password });  
-    adminUser.authToken = response.body.token;
-  const updateRes = await request(app).put('/api/auth/1').send(testUser).set('Authorization', `Bearer ${adminUser.authToken}`)
+    adminUser.authToken = loginRes.body.token;
+  const updateRes = await request(app).put(`/api/auth/${testUserId}`).send(testUser).set('Authorization', `Bearer ${adminUser.authToken}`)
   expect(updateRes.status).toBe(200)
 })
