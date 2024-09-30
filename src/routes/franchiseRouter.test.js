@@ -6,6 +6,7 @@ let testFranchise;
 let adminUser;
 let franchiseId;
 let userId;
+let testStore;
 function randomName() {
     return Math.random().toString(36).substring(2, 12);
   }
@@ -34,6 +35,10 @@ beforeAll(async () => {
     adminUser.authToken = response.body.token;
     const createFranchise = await request(app).post('/api/franchise').set('Authorization', `Bearer ${adminUser.authToken}`).send(testFranchise);
     franchiseId = createFranchise.body.id
+    testStore = {
+        franchiseId: franchiseId,
+        name: randomName()
+    };
   });
 
 test('Get all franchises', async () => {
@@ -54,7 +59,20 @@ test('Delete user franchises', async () => {
     expect(deleteFranchise.body.message).toBe("franchise deleted")
 });
 
-// test('Create new franchise store', async () => {
-//     const createStore = await request(app).post(`/api/franchise/${franchiseId}/store`).set('Authorization', `Bearer ${adminUser.authToken}`).send(testFranchise);
-//     console.log(createStore.body)
-// })
+test('Create franchise', async () => {
+    const createFranchise = await request(app).post('/api/franchise').set('Authorization', `Bearer ${adminUser.authToken}`).send(testFranchise);
+    franchiseId = createFranchise.body.id
+    expect(createFranchise.status).toBe(200);
+})
+
+test('Create new franchise store', async () => {
+    console.log(franchiseId)
+    const createStore = await request(app).post(`/api/franchise/${franchiseId}/store`).set('Authorization', `Bearer ${adminUser.authToken}`).send(testStore);
+    console.log(createStore.body)
+})
+
+// test('Delete store', async () => {
+//     const deleteFranchise = await request(app).delete(`/api/franchise/${franchiseId}/store/${storeId}`).set('Authorization', `Bearer ${adminUser.authToken}`);
+//     expect(deleteFranchise.status).toBe(200);
+//     // expect(deleteFranchise.body.message).toBe("store deleted")
+// });
