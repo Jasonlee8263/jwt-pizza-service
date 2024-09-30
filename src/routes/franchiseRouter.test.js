@@ -7,6 +7,7 @@ let adminUser;
 let franchiseId;
 let userId;
 let testStore;
+let storeId;
 function randomName() {
     return Math.random().toString(36).substring(2, 12);
   }
@@ -49,8 +50,7 @@ beforeEach(async () => {
     };
 })
 afterEach(async () => {
-    const deleteFranchise = await request(app).delete(`/api/franchise/${franchiseId}`).set('Authorization', `Bearer ${adminUser.authToken}`);
-    // console.log(deleteFranchise.body)
+    await request(app).delete(`/api/franchise/${franchiseId}`).set('Authorization', `Bearer ${adminUser.authToken}`);
 })
 
 test('Get all franchises', async () => {
