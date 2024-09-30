@@ -22,8 +22,8 @@ async function createAdminUser() {
 beforeAll(async () => {
     adminUser = await createAdminUser();
     testFranchise = {
-        name: 'pizzaPocket',
-        admins: [{ email: 'admin@jwt.com' }]
+        name: randomName(),
+        admins: [{ email: adminUser.email }]
       };
     const response = await request(app)
     .put('/api/auth')
@@ -38,7 +38,7 @@ test('getAllFranchises', async () => {
 });
 
 test('getUserFranchises', async () => {
-    const getFranchise = await request(app).get(`/api/franchise`).set('Authorization', `Bearer ${adminUser.authToken}`);
+    const getFranchise = await request(app).get(`/api/franchise/1`).set('Authorization', `Bearer ${adminUser.authToken}`);
     console.log(getFranchise.body)
 });
 
