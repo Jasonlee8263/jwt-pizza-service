@@ -33,13 +33,25 @@ beforeAll(async () => {
     .put('/api/auth')
     .send({ email: adminUser.email, password: adminUser.password });  
     adminUser.authToken = response.body.token;
+    // const createFranchise = await request(app).post('/api/franchise').set('Authorization', `Bearer ${adminUser.authToken}`).send(testFranchise);
+    // franchiseId = createFranchise.body.id
+    // testStore = {
+    //     franchiseId: franchiseId,
+    //     name: randomName()
+    // };
+  });
+beforeEach(async () => {
     const createFranchise = await request(app).post('/api/franchise').set('Authorization', `Bearer ${adminUser.authToken}`).send(testFranchise);
     franchiseId = createFranchise.body.id
     testStore = {
         franchiseId: franchiseId,
         name: randomName()
     };
-  });
+})
+afterEach(async () => {
+    const deleteFranchise = await request(app).delete(`/api/franchise/${franchiseId}`).set('Authorization', `Bearer ${adminUser.authToken}`);
+    // console.log(deleteFranchise.body)
+})
 
 test('Get all franchises', async () => {
     const getAllFranchise = await request(app).get('/api/franchise');
@@ -58,21 +70,48 @@ test('Delete user franchises', async () => {
     expect(deleteFranchise.status).toBe(200);
     expect(deleteFranchise.body.message).toBe("franchise deleted")
 });
+test('Unauthorized user delete franchise', async () => {
+    const testUser = { name: 'pizza diner', email: 'reg@test.com', password: 'a' };
+    const registerRes = await request(app).post('/api/auth').send(testUser);
+    let testUserAuthToken = registerRes.body.token;
+    const deleteFranchise = await request(app).delete(`/api/franchise/${franchiseId}`).set('Authorization', `Bearer ${testUserAuthToken}`);
+    expect(deleteFranchise.status).toBe(403)
+})
 
-test('Create franchise', async () => {
-    const createFranchise = await request(app).post('/api/franchise').set('Authorization', `Bearer ${adminUser.authToken}`).send(testFranchise);
-    franchiseId = createFranchise.body.id
-    expect(createFranchise.status).toBe(200);
+
+test('Unauthorized user create franchise', async () => {
+    const testUser = { name: 'pizza diner', email: 'reg@test.com', password: 'a' };
+    const registerRes = await request(app).post('/api/auth').send(testUser);
+    let testUserAuthToken = registerRes.body.token;
+    const createFranchise = await request(app).post('/api/franchise').set('Authorization', `Bearer ${testUserAuthToken}`).send(testFranchise);
+    expect(createFranchise.status).toBe(403)
 })
 
 test('Create new franchise store', async () => {
-    console.log(franchiseId)
     const createStore = await request(app).post(`/api/franchise/${franchiseId}/store`).set('Authorization', `Bearer ${adminUser.authToken}`).send(testStore);
-    console.log(createStore.body)
+    storeId = createStore.body.id
+    expect(createStore.status).toBe(200);
 })
 
-// test('Delete store', async () => {
-//     const deleteFranchise = await request(app).delete(`/api/franchise/${franchiseId}/store/${storeId}`).set('Authorization', `Bearer ${adminUser.authToken}`);
-//     expect(deleteFranchise.status).toBe(200);
-//     // expect(deleteFranchise.body.message).toBe("store deleted")
-// });
+test('Unauthorized user create store', async () => {
+    const testUser = { name: 'pizza diner', email: 'reg@test.com', password: 'a' };
+    const registerRes = await request(app).post('/api/auth').send(testUser);
+    let testUserAuthToken = registerRes.body.token;
+    const createStore = await request(app).post(`/api/franchise/${franchiseId}/store`).set('Authorization', `Bearer ${testUserAuthToken}`).send(testStore);
+    expect(createStore.status).toBe(403)
+})
+
+test('Delete store', async () => {
+    const deleteStore = await request(app).delete(`/api/franchise/${franchiseId}/store/${storeId}`).set('Authorization', `Bearer ${adminUser.authToken}`);
+    // console.log(deleteFranchise.body)
+    expect(deleteStore.status).toBe(200);
+    expect(deleteStore.body.message).toBe("store deleted")
+});
+
+test('Unauthorized user delete store', async () => {
+    const testUser = { name: 'pizza diner', email: 'reg@test.com', password: 'a' };
+    const registerRes = await request(app).post('/api/auth').send(testUser);
+    let testUserAuthToken = registerRes.body.token;
+    const deleteStore = await request(app).delete(`/api/franchise/${franchiseId}/store/${storeId}`).set('Authorization', `Bearer ${testUserAuthToken}`);
+    expect(deleteStore.status).toBe(403)
+})

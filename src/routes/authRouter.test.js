@@ -27,6 +27,12 @@ beforeAll(async () => {
   testUserId = registerRes.body.user.id
 });
 
+test('Invalid input when register', async () => {
+  const invaildTestUser = { name: 'pizza diner', email: 'reg@test.com' };
+  const registerRes = await request(app).post('/api/auth').send(invaildTestUser);
+  expect(registerRes.status).toBe(400);
+})
+
 test('login', async () => {
   const loginRes = await request(app).put('/api/auth').send(testUser);
   expect(loginRes.status).toBe(200);
@@ -55,3 +61,17 @@ test('update user', async () => {
   const updateRes = await request(app).put(`/api/auth/${testUserId}`).send(testUser).set('Authorization', `Bearer ${adminUser.authToken}`)
   expect(updateRes.status).toBe(200)
 })
+
+test('Unauthorized', async () => {
+  const updateRes = await request(app).put(`/api/auth/${testUserId}`).send(testUser).set('Authorization', `Bearer ${testUserAuthToken}`)
+  expect(updateRes.status).toBe(401);
+})
+
+// test('Unauthorized when update', async () => {
+//   const mockTestUser = { name: 'mock', email: 'mock@test.com', password: 'a' };
+//   const registerRes = await request(app).post('/api/auth').send(mockTestUser);
+//   let mockUserId = registerRes.body.user.id
+//   const updateRes = await request(app).put(`/api/auth/${mockUserId}`).send(mockTestUser).set('Authorization', `Bearer ${testUserAuthToken}`)
+//   console.log(updateRes.body)
+//   expect(updateRes.status).toBe(403)
+// })
