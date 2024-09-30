@@ -26,9 +26,8 @@ beforeAll(async () => {
         admins: [{ email: 'admin@jwt.com' }]
       };
     const response = await request(app)
-    .post('/api/auth/login')
-    .send({ email: adminUser.email, password: adminUser.password });
-  
+    .put('/api/auth')
+    .send({ email: adminUser.email, password: adminUser.password });  
     adminUser.authToken = response.body.token;
   });
 
