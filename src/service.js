@@ -1,5 +1,5 @@
 const express = require('express');
-const metrics = require('./metrics');
+// const metrics = require('./metrics');
 const { authRouter, setAuthUser } = require('./routes/authRouter.js');
 const orderRouter = require('./routes/orderRouter.js');
 const franchiseRouter = require('./routes/franchiseRouter.js');
