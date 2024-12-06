@@ -54,7 +54,7 @@ jobs:
               listPerPage: 10,
           },
           factory: {
-              url: 'https://pizza-factory.cs329.click',
+              url: 'https://pizza-service.jasonleedev.net',
               apiKey: '${{ secrets.FACTORY_API_KEY }}',
           },
           metrics: {
