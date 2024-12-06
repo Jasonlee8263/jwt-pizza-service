@@ -1,5 +1,5 @@
 const express = require('express');
-// const metrics = require('./metrics');
+const Metrics = require("./metrics.js")
 const { authRouter, setAuthUser } = require('./routes/authRouter.js');
 const orderRouter = require('./routes/orderRouter.js');
 const franchiseRouter = require('./routes/franchiseRouter.js');
@@ -7,8 +7,10 @@ const version = require('./version.json');
 const config = require('./config.js');
 
 const app = express();
+const metrics = new Metrics();
 app.use(express.json());
 app.use(setAuthUser);
+app.use(metrics.requestTracker);
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -16,6 +18,8 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   next();
 });
+
+metrics.sendMetricsPeriodically(60000);
 
 const apiRouter = express.Router();
 app.use('/api', apiRouter);
@@ -50,13 +54,13 @@ app.use((err, req, res, next) => {
   next();
 });
 // metrics middleware
-// app.use((req, res, next) => {
-//   metrics.sendMetrics({
-//     metric: 'http_requests',
-//     method: req.method,
-//     path: req.path,
-//     status: res.statusCode,
-//   });
-//   next();
-// });
+app.use((req, res, next) => {
+  metrics.sendMetrics({
+    metric: 'http_requests',
+    method: req.method,
+    path: req.path,
+    status: res.statusCode,
+  });
+  next();
+});
 module.exports = app;

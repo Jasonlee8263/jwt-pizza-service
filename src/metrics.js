@@ -1,5 +1,5 @@
 const os = require('os');
-const config = require('../config.js');
+const config = require('./config.js');
 const MetricBuilder = require('./MetricBuilder')
 
 class Metrics {
