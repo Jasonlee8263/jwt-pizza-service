@@ -48,5 +48,14 @@ app.use((err, req, res, next) => {
   res.status(err.statusCode ?? 500).json({ message: err.message, stack: err.stack });
   next();
 });
-
+// metrics middleware
+app.use((req, res, next) => {
+  metrics.sendMetrics({
+    metric: 'http_requests',
+    method: req.method,
+    path: req.path,
+    status: res.statusCode,
+  });
+  next();
+});
 module.exports = app;
