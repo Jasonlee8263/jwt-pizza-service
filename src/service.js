@@ -50,13 +50,13 @@ app.use((err, req, res, next) => {
   next();
 });
 // metrics middleware
-app.use((req, res, next) => {
-  metrics.sendMetrics({
-    metric: 'http_requests',
-    method: req.method,
-    path: req.path,
-    status: res.statusCode,
-  });
-  next();
-});
+// app.use((req, res, next) => {
+//   metrics.sendMetrics({
+//     metric: 'http_requests',
+//     method: req.method,
+//     path: req.path,
+//     status: res.statusCode,
+//   });
+//   next();
+// });
 module.exports = app;
