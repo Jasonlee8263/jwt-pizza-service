@@ -5,6 +5,7 @@ const orderRouter = require('./routes/orderRouter.js');
 const franchiseRouter = require('./routes/franchiseRouter.js');
 const version = require('./version.json');
 const config = require('./config.js');
+const logger = require('./logger');
 
 const app = express();
 const metrics = new Metrics();
@@ -18,6 +19,7 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   next();
 });
+app.use(logger.httpLogger);
 
 metrics.sendMetricsPeriodically(60000);
 
